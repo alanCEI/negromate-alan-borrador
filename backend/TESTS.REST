@@ -1,0 +1,107 @@
+### Variables
+@baseUrl = http://localhost:5000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### === CONTENIDO DINÁMICO (NUEVO) ===
+
+### Poblar contenido desde mock data
+POST {{baseUrl}}/content/seed
+Authorization: Bearer {{token}}
+
+### Obtener información de la empresa
+GET {{baseUrl}}/content/key/company-info
+Accept: application/json
+
+### Obtener contenido de landing page
+GET {{baseUrl}}/content/key/landing-page
+Accept: application/json
+
+### Obtener contenido de página About
+GET {{baseUrl}}/content/key/about-page
+Accept: application/json
+
+### Obtener contenido de página Contact
+GET {{baseUrl}}/content/key/contact-page
+Accept: application/json
+
+### Obtener contenido de servicio de Diseño Gráfico
+GET {{baseUrl}}/content/key/graphic-design-service
+Accept: application/json
+
+### Obtener contenido de servicio de Ropa Personalizada
+GET {{baseUrl}}/content/key/custom-clothing-service
+Accept: application/json
+
+### Obtener contenido de servicio de Murales
+GET {{baseUrl}}/content/key/murals-service
+Accept: application/json
+
+### Obtener todo el contenido de tipo "page"
+GET {{baseUrl}}/content/type/page
+Accept: application/json
+
+### Obtener todo el contenido de tipo "service"
+GET {{baseUrl}}/content/type/service
+Accept: application/json
+
+### Actualizar contenido (Admin)
+PUT {{baseUrl}}/content/company-info
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": {
+    "name": "NegroMate Updated",
+    "tagline": "Arte Urbano Personalizado - Actualizado",
+    "description": "Descripción actualizada desde API"
+  }
+}
+
+### === TESTS EXISTENTES ===
+
+### Health Check
+GET {{baseUrl}}/../../
+Accept: application/json
+
+### Registrar usuario
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Usuario Test",
+  "email": "test@negromate.com",
+  "password": "test123456"
+}
+
+### Iniciar sesión
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@negromate.com",
+  "password": "test123456"
+}
+
+### Obtener productos
+GET {{baseUrl}}/products
+Accept: application/json
+
+### Crear orden
+POST {{baseUrl}}/orders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "items": [
+    {
+      "productId": "basic-design",
+      "quantity": 1
+    }
+  ],
+  "shippingAddress": {
+    "street": "Calle Ejemplo 123",
+    "city": "Madrid",
+    "postalCode": "28001",
+    "country": "España"
+  }
+}

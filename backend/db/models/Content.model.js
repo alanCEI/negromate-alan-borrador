@@ -1,43 +1,43 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 const contentSchema = new mongoose.Schema({
-  key: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  type: {
-    type: String,
-    enum: ['page', 'section', 'company', 'service'],
-    required: true
-  },
-  category: {
-    type: String,
-    default: 'general'
-  },
-  content: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  version: {
-    type: Number,
-    default: 1
-  },
-  lastModified: {
-    type: Date,
-    default: Date.now
-  }
+    section: {
+        type: String,
+        required: true,
+        unique: true, // Solo puede haber un documento por sección (ej. 'aboutUs')
+    },
+    title: {
+        type: String,
+        required: true,
+    },
+    mainParagraph: {
+        type: String
+    },
+    // Estructura flexible para diferentes tipos de contenido
+    artists: {
+        title: String,
+        imageUrl: String,
+        instagram: {
+            adriana: String,
+            yoel: String
+        },
+        paragraphs: [String]
+    },
+    galleryImages: {
+        type: Map,
+        of: [{
+            id: Number,
+            title: String,
+            brand: String,
+            imageUrl: String,
+            description: String
+        }]
+    }
 }, {
-  timestamps: true
-})
+    // Permite campos no definidos en el esquema
+    strict: false
+});
 
-// Índices para mejorar performance
-contentSchema.index({ type: 1, category: 1 })
-contentSchema.index({ key: 1, isActive: 1 })
+const Content = mongoose.model('Content', contentSchema);
 
-export default mongoose.model('Content', contentSchema)
+export default Content;

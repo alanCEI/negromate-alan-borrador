@@ -1,197 +1,103 @@
-import React from 'react'
-import { useCart } from '@/context/CartContext'
-import { useAuth } from '@/context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useCart } from '@/context/CartContext';
+import { api } from '@/services/api';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ShoppingCart = () => {
-  const { 
-    cartItems, 
-    removeFromCart, 
-    updateQuantity, 
-    clearCart, 
-    getTotalPrice, 
-    getTotalItems 
-  } = useCart()
-  const { isAuthenticated } = useAuth()
-  const navigate = useNavigate()
+    const { cartItems, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
+    const [status, setStatus] = useState({ loading: false, error: null, success: false });
 
-  const handleCheckout = () => {
-    if (!isAuthenticated) {
-      alert('Debes iniciar sesión para realizar la compra')
-      navigate('/profile')
-      return
+    const handleCheckout = async () => {
+        setStatus({ loading: true, error: null, success: false });
+        try {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                throw new Error("Debes iniciar sesión para finalizar la compra.");
+            }
+            const orderData = {
+                orderItems: cartItems.map(item => ({
+                    product: item._id,
+                    quantity: item.quantity
+                }))
+            };
+            await api.orders.create(orderData, token);
+            setStatus({ loading: false, error: null, success: true });
+            setTimeout(clearCart, 300); // Pequeño delay para que la UI se actualice
+        } catch (error) {
+            setStatus({ loading: false, error: error.message || 'Hubo un error al procesar tu orden.', success: false });
+        }
+    };
+
+    if (status.success) {
+        return (
+             <div className="container mx-auto py-20 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                <h1 className="text-3xl font-bold text-contrast-color mb-4">¡Orden Realizada con Éxito!</h1>
+                <p>Gracias por tu compra. Hemos recibido tu pedido.</p>
+                <Link to="/" className="inline-block mt-6 bg-contrast-color text-main-color font-bold py-2 px-6 rounded-lg hover:bg-sub-contrast transition-colors">Volver al Inicio</Link>
+            </div>
+        )
     }
-    
-    // Aquí implementarías la lógica de checkout real
-    alert('Funcionalidad de pago en desarrollo. ¡Gracias por tu interés!')
-    clearCart()
-  }
 
-  if (!isAuthenticated) {
     return (
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="card">
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-3xl font-bold mb-4 text-text-dark">
-            Acceso Requerido
-          </h1>
-          <p className="text-lg text-text-light mb-6">
-            Debes iniciar sesión para ver tu carrito de compras
-          </p>
-          <button
-            onClick={() => navigate('/profile')}
-            className="btn-primary"
-          >
-            Iniciar Sesión
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (cartItems.length === 0) {
-    return (
-      <div className="max-w-2xl mx-auto text-center">
-        <div className="card">
-          <div className="text-6xl mb-4">🛒</div>
-          <h1 className="text-3xl font-bold mb-4 text-text-dark">
-            Carrito Vacío
-          </h1>
-          <p className="text-lg text-text-light mb-6">
-            Aún no has agregado productos a tu carrito
-          </p>
-          <button
-            onClick={() => navigate('/')}
-            className="btn-primary"
-          >
-            Explorar Servicios
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4 text-text-dark">
-          Mi Carrito
-        </h1>
-        <p className="text-lg text-text-light">
-          {getTotalItems()} {getTotalItems() === 1 ? 'producto' : 'productos'} en tu carrito
-        </p>
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Lista de productos */}
-        <div className="lg:col-span-2 space-y-4">
-          {cartItems.map(item => (
-            <div key={item.id} className="card">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-text-dark mb-2">
-                    {item.name}
-                  </h3>
-                  <p className="text-text-light mb-2">
-                    Precio unitario: {item.price}€
-                  </p>
-                  
-                  {/* Controles de cantidad */}
-                  <div className="flex items-center space-x-3">
-                    <span className="text-sm text-text-light">Cantidad:</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
-                    >
-                      -
-                    </button>
-                    <span className="w-8 text-center font-medium">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="text-right">
-                  <p className="text-xl font-bold text-text-dark mb-2">
-                    {(item.price * item.quantity).toFixed(2)}€
-                  </p>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors text-sm"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
+        <section className="py-16 bg-main-color min-h-screen">
+            <div className="container mx-auto px-4">
+                <h1 className="text-4xl font-bold text-center mb-12 text-contrast-color">Carrito de Compras</h1>
+                {cartItems.length === 0 ? (
+                    <div className="text-center py-10 bg-dark-bg rounded-lg">
+                        <p className="text-xl mb-4">Tu carrito está vacío.</p>
+                        <Link to="/" className="inline-block mt-4 bg-contrast-color text-main-color font-bold py-2 px-6 rounded-lg hover:bg-sub-contrast transition-colors">Explorar productos</Link>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2 bg-dark-bg p-6 rounded-lg space-y-4">
+                            {cartItems.map(item => (
+                                <div key={item._id} className="flex flex-col sm:flex-row items-center justify-between border-b border-gray-700 pb-4 gap-4">
+                                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                                        <img src={item.imageUrl} alt={item.name} className="w-20 h-20 object-cover rounded"/>
+                                        <div>
+                                            <h3 className="font-bold text-lg">{item.name}</h3>
+                                            <p className="text-sm text-gray-400">{item.price.toFixed(2)}€</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <input
+                                            type="number"
+                                            value={item.quantity}
+                                            onChange={(e) => updateQuantity(item._id, parseInt(e.target.value))}
+                                            className="w-16 text-center bg-main-color rounded p-1"
+                                            min="1"
+                                        />
+                                        <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-400 transition-colors">
+                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="lg:col-span-1 bg-dark-bg p-6 rounded-lg self-start sticky top-24">
+                             <h2 className="text-2xl font-bold mb-6 border-b border-gray-700 pb-4">Resumen de la Orden</h2>
+                             <div className="flex justify-between mb-4">
+                                 <span>Subtotal</span>
+                                 <span>{cartTotal.toFixed(2)}€</span>
+                             </div>
+                             <div className="flex justify-between font-bold text-xl border-t border-gray-700 pt-4">
+                                 <span>Total</span>
+                                 <span>{cartTotal.toFixed(2)}€</span>
+                             </div>
+                             <button
+                                onClick={handleCheckout}
+                                disabled={status.loading}
+                                className="w-full mt-6 bg-contrast-color text-main-color font-bold py-3 rounded-lg hover:bg-sub-contrast transition-colors disabled:opacity-50"
+                             >
+                                 {status.loading ? 'Procesando...' : 'Finalizar Compra'}
+                             </button>
+                             {status.error && <p className="text-red-500 text-center mt-4">{status.error}</p>}
+                        </div>
+                    </div>
+                )}
             </div>
-          ))}
-        </div>
+        </section>
+    );
+};
 
-        {/* Resumen del pedido */}
-        <div className="lg:col-span-1">
-          <div className="card bg-gradient-to-br from-accent-color to-pink-500 text-white sticky top-4">
-            <h2 className="text-2xl font-bold mb-6">
-              Resumen del Pedido
-            </h2>
-            
-            <div className="space-y-4 mb-6">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>{getTotalPrice().toFixed(2)}€</span>
-              </div>
-              <div className="flex justify-between">
-                <span>IVA (21%):</span>
-                <span>{(getTotalPrice() * 0.21).toFixed(2)}€</span>
-              </div>
-              <div className="border-t border-white border-opacity-30 pt-4">
-                <div className="flex justify-between text-xl font-bold">
-                  <span>Total:</span>
-                  <span>{(getTotalPrice() * 1.21).toFixed(2)}€</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={handleCheckout}
-                className="w-full bg-white text-accent-color py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
-              >
-                Proceder al Pago
-              </button>
-              
-              <button
-                onClick={clearCart}
-                className="w-full border-2 border-white py-3 rounded-lg font-bold hover:bg-white hover:text-accent-color transition-colors"
-              >
-                Vaciar Carrito
-              </button>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-white border-opacity-30">
-              <h3 className="font-bold mb-3">Métodos de Pago Aceptados</h3>
-              <div className="flex space-x-2">
-                <div className="bg-white bg-opacity-20 px-3 py-2 rounded text-sm">
-                  💳 Tarjeta
-                </div>
-                <div className="bg-white bg-opacity-20 px-3 py-2 rounded text-sm">
-                  📱 PayPal
-                </div>
-                <div className="bg-white bg-opacity-20 px-3 py-2 rounded text-sm">
-                  🏦 Transferencia
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default ShoppingCart
+export default ShoppingCart;

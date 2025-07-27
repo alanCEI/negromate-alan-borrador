@@ -1,30 +1,19 @@
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
-// Componente para rutas que solo deben ver usuarios NO autenticados
-const GuestRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth()
+const GuestRoute = () => {
+    const { user, loading } = useAuth();
 
-  // Mientras carga la información de autenticación, muestra un loading
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <p className="text-lg text-text-light">Cargando...</p>
-        </div>
-      </div>
-    )
-  }
+     if (loading) {
+        return (
+             <div className="flex justify-center items-center h-screen">
+                <div className="text-xl">Cargando...</div>
+            </div>
+        );
+    }
 
-  // Si está autenticado, redirige al dashboard/perfil
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
-  }
+    // Si el usuario está logueado, lo redirigimos al carrito
+    return user ? <Navigate to="/cart" replace /> : <Outlet />;
+};
 
-  // Si no está autenticado, muestra el componente (login/register)
-  return children
-}
-
-export default GuestRoute
+export default GuestRoute;

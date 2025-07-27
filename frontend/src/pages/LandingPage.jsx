@@ -1,16 +1,15 @@
-import React from 'react'
-import Hero from '@/components/Hero'
-import Products from '@/components/Products'
-import ContactInfo from '@/components/ContactInfo'
+import Hero from '@/components/Hero';
+import Products from '@/components/Products';
+import ContactInfo from '@/components/ContactInfo';
 
 const LandingPage = () => {
-  return (
-    <div>
-      <Hero />
-      <Products />
-      <ContactInfo />
-    </div>
-  )
-}
+    return (
+        <>
+            <Hero />
+            <Products />
+            <ContactInfo />
+        </>
+    );
+};
 
-export default LandingPage
+export default LandingPage;

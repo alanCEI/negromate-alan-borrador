@@ -1,45 +1,31 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-const ThemeContext = createContext()
+const ThemeContext = createContext();
 
-export const useTheme = () => {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme debe usarse dentro de ThemeContextProvider')
-  }
-  return context
-}
+export const ThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
-export const ThemeContextProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+    useEffect(() => {
+        const root = window.document.documentElement;
+        
+        if (theme === 'light') {
+            root.classList.add('dark'); // Usamos 'dark' para el modo claro como en tu CSS original
+        } else {
+            root.classList.remove('dark');
+        }
 
-  // Cargar tema desde localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    
-    const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark)
-    setIsDarkMode(shouldUseDark)
-  }, [])
+        localStorage.setItem('theme', theme);
+    }, [theme]);
 
-  // Aplicar tema al documento
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light')
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light')
-  }, [isDarkMode])
+    const toggleTheme = () => {
+        setTheme((prevTheme) => (prevTheme === 'dark' ? 'light' : 'dark'));
+    };
 
-  const toggleTheme = () => {
-    setIsDarkMode(prev => !prev)
-  }
+    return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            {children}
+        </ThemeContext.Provider>
+    );
+};
 
-  const value = {
-    isDarkMode,
-    toggleTheme,
-  }
-
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  )
-}
+export const useTheme = () => useContext(ThemeContext);

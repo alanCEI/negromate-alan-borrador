@@ -1,107 +1,82 @@
 ### Variables
-@baseUrl = http://localhost:5000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+@api_url = http://localhost:5001/api
+@jwt_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOTQyMTk5NDE5NjEiLCJuYW1lIjoibmVncm9tYXRlIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.MgibxCifAvQyftRIMv9KvLlf3Wn4Efhft4pIkpS80NU
 
-### === CONTENIDO DINÁMICO (NUEVO) ===
+#//////////////////////////////
+# AUTH ROUTES
+#//////////////////////////////
 
-### Poblar contenido desde mock data
-POST {{baseUrl}}/content/seed
-Authorization: Bearer {{token}}
-
-### Obtener información de la empresa
-GET {{baseUrl}}/content/key/company-info
-Accept: application/json
-
-### Obtener contenido de landing page
-GET {{baseUrl}}/content/key/landing-page
-Accept: application/json
-
-### Obtener contenido de página About
-GET {{baseUrl}}/content/key/about-page
-Accept: application/json
-
-### Obtener contenido de página Contact
-GET {{baseUrl}}/content/key/contact-page
-Accept: application/json
-
-### Obtener contenido de servicio de Diseño Gráfico
-GET {{baseUrl}}/content/key/graphic-design-service
-Accept: application/json
-
-### Obtener contenido de servicio de Ropa Personalizada
-GET {{baseUrl}}/content/key/custom-clothing-service
-Accept: application/json
-
-### Obtener contenido de servicio de Murales
-GET {{baseUrl}}/content/key/murals-service
-Accept: application/json
-
-### Obtener todo el contenido de tipo "page"
-GET {{baseUrl}}/content/type/page
-Accept: application/json
-
-### Obtener todo el contenido de tipo "service"
-GET {{baseUrl}}/content/type/service
-Accept: application/json
-
-### Actualizar contenido (Admin)
-PUT {{baseUrl}}/content/company-info
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{
-  "content": {
-    "name": "NegroMate Updated",
-    "tagline": "Arte Urbano Personalizado - Actualizado",
-    "description": "Descripción actualizada desde API"
-  }
-}
-
-### === TESTS EXISTENTES ===
-
-### Health Check
-GET {{baseUrl}}/../../
-Accept: application/json
-
-### Registrar usuario
-POST {{baseUrl}}/auth/register
+### Registrar un nuevo usuario
+POST {{api_url}}/auth/register
 Content-Type: application/json
 
 {
-  "name": "Usuario Test",
-  "email": "test@negromate.com",
-  "password": "test123456"
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123"
 }
 
 ### Iniciar sesión
-POST {{baseUrl}}/auth/login
+POST {{api_url}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "test@negromate.com",
-  "password": "test123456"
+    "email": "test@example.com",
+    "password": "password123"
 }
 
-### Obtener productos
-GET {{baseUrl}}/products
-Accept: application/json
+### Obtener perfil del usuario (Requiere Auth)
+GET {{api_url}}/auth/profile
+Authorization: Bearer {{jwt_token}}
 
-### Crear orden
-POST {{baseUrl}}/orders
+
+#//////////////////////////////
+# PRODUCT ROUTES
+#//////////////////////////////
+
+### Obtener todos los productos
+GET {{api_url}}/products
+
+### Obtener productos de la categoría "Murals"
+GET {{api_url}}/products?category=Murals
+
+### Obtener un producto por ID
+GET {{api_url}}/products/60d21b4667d0d8992e610c85 # Reemplaza con un ID válido de tu DB
+
+
+#//////////////////////////////
+# CONTENT ROUTES
+#//////////////////////////////
+
+### Obtener contenido de la sección "aboutUs"
+GET {{api_url}}/content/aboutUs
+
+### Obtener galería de "Murals"
+GET {{api_url}}/content/gallery-murals
+
+
+#//////////////////////////////
+# ORDER ROUTES (Requieren Auth)
+#//////////////////////////////
+
+### Crear una nueva orden
+POST {{api_url}}/orders
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer {{jwt_token}}
 
 {
-  "items": [
-    {
-      "productId": "basic-design",
-      "quantity": 1
-    }
-  ],
-  "shippingAddress": {
-    "street": "Calle Ejemplo 123",
-    "city": "Madrid",
-    "postalCode": "28001",
-    "country": "España"
-  }
+    "orderItems": [
+        {
+            "product": "60d21b4667d0d8992e610c85", # Reemplaza con ID de producto
+            "quantity": 2
+        },
+        {
+            "product": "60d21b4667d0d8992e610c86", # Reemplaza con ID de producto
+            "quantity": 1
+        }
+    ]
 }
+
+### Obtener mis órdenes
+GET {{api_url}}/orders/myorders
+Authorization: Bearer {{jwt_token}}

@@ -1,212 +1,83 @@
-import React from 'react'
-import Gallery from '@/components/Gallery'
-import PricingCard from '@/components/PricingCard'
+import { useState, useEffect } from 'react';
+import { api } from '@/services/api';
+import { useCart } from '@/context/CartContext';
 
-const CustomClothing = () => {
-  const clothingItems = [
-    {
-      title: 'Camiseta Street Art',
-      description: 'Diseño exclusivo con técnicas de spray digital',
-      emoji: '👕'
-    },
-    {
-      title: 'Hoodie Personalizado',
-      description: 'Sudadera con capucha y diseño frontal/trasero',
-      emoji: '🧥'
-    },
-    {
-      title: 'Gorra Bordada',
-      description: 'Bordado de alta calidad con tu diseño',
-      emoji: '🧢'
-    },
-    {
-      title: 'Tote Bag Artística',
-      description: 'Bolsa ecológica con arte original',
-      emoji: '👜'
-    },
-    {
-      title: 'Chaqueta Bomber',
-      description: 'Chaqueta personalizada con parches únicos',
-      emoji: '🧥'
-    },
-    {
-      title: 'Sneakers Custom',
-      description: 'Zapatillas personalizadas con pintura especial',
-      emoji: '👟'
-    }
-  ]
-
-  const pricingPlans = [
-    {
-      id: 'basic-clothing',
-      name: 'Paquete Básico',
-      price: 50,
-      features: [
-        '1 prenda personalizada',
-        'Diseño simple (1-2 colores)',
-        'Impresión/bordado básico',
-        'Prenda de calidad estándar',
-        '1 revisión de diseño'
-      ]
-    },
-    {
-      id: 'premium-clothing',
-      name: 'Paquete Premium',
-      price: 100,
-      features: [
-        '2 prendas personalizadas',
-        'Diseño complejo (multicolor)',
-        'Técnicas mixtas (impresión + bordado)',
-        'Prendas de calidad premium',
-        '3 revisiones de diseño',
-        'Packaging especial'
-      ]
-    },
-    {
-      id: 'collection-clothing',
-      name: 'Colección Completa',
-      price: 150,
-      features: [
-        '4 prendas personalizadas',
-        'Línea de diseño coherente',
-        'Técnicas especiales (foil, glow)',
-        'Prendas de marca reconocida',
-        'Revisiones ilimitadas',
-        'Photoshoot del resultado',
-        'Certificado de autenticidad'
-      ]
-    }
-  ]
-
-  return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text-dark">
-          Ropa Personalizada
-        </h1>
-        <p className="text-xl text-text-light max-w-3xl mx-auto">
-          Transforma tu estilo con prendas únicas. Cada pieza es una obra de arte 
-          wearable diseñada especialmente para ti.
-        </p>
-      </div>
-
-      {/* Galería de ropa */}
-      <Gallery 
-        images={clothingItems} 
-        title="Nuestras Creaciones" 
-      />
-
-      {/* Sección de precios */}
-      <div className="mb-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 text-text-dark">
-            Paquetes de Personalización
-          </h2>
-          <p className="text-lg text-text-light">
-            Desde piezas individuales hasta colecciones completas
-          </p>
+const PriceCard = ({ product }) => {
+    const { addToCart } = useCart();
+    return (
+        <div className="bg-dark-bg p-8 rounded-lg shadow-xl flex flex-col border-2 border-contrast-color">
+            <h3 className="text-2xl font-bold text-contrast-color mb-4 text-center">{product.name}</h3>
+            <p className="text-center mb-6">{product.description}</p>
+            <div className="text-5xl font-bold text-center mb-6 text-contrast-color">{product.price}€</div>
+             <ul className="space-y-3 mb-8 flex-grow">
+                {product.details.map((detail, i) => <li key={i} className="flex items-start"><svg className="w-5 h-5 text-contrast-color mr-2 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg><span>{detail}</span></li>)}
+            </ul>
+            <button onClick={() => addToCart(product)} className="mt-auto w-full bg-contrast-color text-main-color font-bold py-3 rounded-lg hover:bg-sub-contrast transition-colors">Agregar al Carrito</button>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {pricingPlans.map(plan => (
-            <PricingCard key={plan.id} product={plan} />
-          ))}
-        </div>
-      </div>
-
-      {/* Técnicas y materiales */}
-      <div className="grid md:grid-cols-2 gap-8 mb-16">
-        <div className="card">
-          <h2 className="text-2xl font-bold mb-6 text-text-dark">
-            Técnicas Utilizadas
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">🖨️</span>
-              <div>
-                <h3 className="font-bold text-text-dark">Serigrafía</h3>
-                <p className="text-text-light">Impresión de alta durabilidad</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">🪡</span>
-              <div>
-                <h3 className="font-bold text-text-dark">Bordado</h3>
-                <p className="text-text-light">Acabado premium y elegante</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">✨</span>
-              <div>
-                <h3 className="font-bold text-text-dark">Vinilo Transfer</h3>
-                <p className="text-text-light">Colores vibrantes y precisos</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl">🎨</span>
-              <div>
-                <h3 className="font-bold text-text-dark">Pintura Textil</h3>
-                <p className="text-text-light">Arte manual exclusivo</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
-          <h2 className="text-2xl font-bold mb-6">
-            Marcas de Ropa que Utilizamos
-          </h2>
-          <div className="space-y-4">
-            <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-              <h3 className="font-bold mb-2">Premium</h3>
-              <p className="opacity-90">Gildan, Fruit of the Loom, Stanley/Stella</p>
-            </div>
-            
-            <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-              <h3 className="font-bold mb-2">Eco-Friendly</h3>
-              <p className="opacity-90">Algodón orgánico certificado</p>
-            </div>
-            
-            <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-              <h3 className="font-bold mb-2">Deportiva</h3>
-              <p className="opacity-90">Poliéster reciclado, tecnología Dri-FIT</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Cuidado de las prendas */}
-      <div className="card bg-gradient-to-r from-green-500 to-teal-500 text-white text-center">
-        <h2 className="text-3xl font-bold mb-4">
-          Cuidado de tu Prenda Personalizada
-        </h2>
-        <p className="text-lg opacity-90 mb-6">
-          Sigue estos consejos para mantener tu diseño como el primer día
-        </p>
-        <div className="grid md:grid-cols-4 gap-4">
-          <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-            <div className="text-3xl mb-2">🌡️</div>
-            <p className="font-medium">Lavar en frío (máx. 30°C)</p>
-          </div>
-          <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-            <div className="text-3xl mb-2">🔄</div>
-            <p className="font-medium">Voltear al revés antes del lavado</p>
-          </div>
-          <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-            <div className="text-3xl mb-2">🚫</div>
-            <p className="font-medium">No usar lejía ni suavizante</p>
-          </div>
-          <div className="bg-white bg-opacity-20 p-4 rounded-lg">
-            <div className="text-3xl mb-2">🌬️</div>
-            <p className="font-medium">Secar al aire libre</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+    );
 }
 
-export default CustomClothing
+const CustomClothing = () => {
+    const [products, setProducts] = useState([]);
+    const [gallery, setGallery] = useState([]);
+    const [modalImage, setModalImage] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        const fetchData = async () => {
+            try {
+                const [productsRes, galleryRes] = await Promise.all([
+                    api.products.get('CustomClothing', { signal: controller.signal }),
+                    api.content.get('gallery-customClothing', { signal: controller.signal })
+                ]);
+                setProducts(productsRes.data);
+                setGallery(galleryRes.data);
+            } catch (error) {
+                if(error.name !== 'AbortError') console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+        return () => controller.abort();
+    }, []);
+
+    if (loading) return <div className="text-center py-20 text-xl">Cargando prendas...</div>;
+
+    return (
+        <div className="bg-main-color text-sub-color">
+            <section className="py-16">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl font-bold text-center mb-12 text-contrast-color">Galería de Ropa Personalizada</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {gallery.map(item => (
+                            <div key={item.id} className="group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/5]" onClick={() => setModalImage(item.imageUrl)}>
+                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                    <h3 className="text-xl font-bold text-white transform translate-y-4 group-hover:translate-y-0 transition-transform">{item.title}</h3>
+                                    <p className="text-white opacity-0 group-hover:opacity-100 transition-opacity delay-100">{item.description}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+            <section className="py-16 bg-dark-bg">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl font-bold text-center mb-12 text-contrast-color">Paquetes de Personalización</h2>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                       {products.map(p => <PriceCard key={p._id} product={p} />)}
+                    </div>
+                </div>
+            </section>
+            {modalImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center p-4" onClick={() => setModalImage(null)}>
+                    <img src={modalImage} alt="Vista ampliada" className="max-w-full max-h-full object-contain rounded-lg" />
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default CustomClothing;

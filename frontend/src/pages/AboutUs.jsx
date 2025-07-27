@@ -1,115 +1,61 @@
-import React, { useState, useEffect } from 'react'
-import apiService from '@/services/api'
+import { useState, useEffect } from 'react';
+import { api } from '@/services/api';
 
 const AboutUs = () => {
-  const [aboutContent, setAboutContent] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+    const [content, setContent] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchAboutContent = async () => {
-      const controller = new AbortController()
-      
-      try {
-        const response = await apiService.getAboutPageContent()
-        if (response.status === 'ok') {
-          setAboutContent(response.data.content)
-        }
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error('Error fetching about content:', error)
-        }
-      } finally {
-        setIsLoading(false)
-      }
+    useEffect(() => {
+        const controller = new AbortController();
+        const fetchContent = async () => {
+            try {
+                const response = await api.content.get('aboutUs', { signal: controller.signal });
+                setContent(response.data);
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    setError('No se pudo cargar el contenido. Inténtalo más tarde.');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
 
-      return () => controller.abort()
-    }
+        fetchContent();
+        return () => controller.abort();
+    }, []);
 
-    fetchAboutContent()
-  }, [])
+    if (loading) return <div className="text-center py-20 text-xl">Cargando...</div>;
+    if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
+    if (!content) return <div className="text-center py-20">No hay contenido disponible.</div>;
 
-  if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto text-center py-16">
-        <div className="text-6xl mb-4">⏳</div>
-        <h1 className="text-3xl font-bold mb-4">Cargando contenido...</h1>
-      </div>
-    )
-  }
+        <section className="py-16 bg-main-color">
+            <div className="container mx-auto px-4">
+                <h1 className="text-4xl font-bold text-center mb-10 text-contrast-color">{content.title}</h1>
+                <p
+                    className="text-lg text-center max-w-4xl mx-auto mb-16 leading-relaxed bg-sub-color text-dark-bg p-8 rounded-lg border-4 border-contrast-color shadow-xl"
+                    dangerouslySetInnerHTML={{ __html: content.mainParagraph }} // 
+                ></p>
 
-  if (!aboutContent) {
-    return (
-      <div className="max-w-4xl mx-auto text-center py-16">
-        <div className="text-6xl mb-4">❌</div>
-        <h1 className="text-3xl font-bold mb-4">Error al cargar contenido</h1>
-        <p className="text-lg text-text-light">
-          No se pudo cargar la información de la página.
-        </p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="max-w-4xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text-dark">
-          {aboutContent.title}
-        </h1>
-        <p className="text-xl text-text-light">
-          {aboutContent.subtitle}
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
-        <div>
-          <h2 className="text-3xl font-bold mb-6 text-text-dark">
-            {aboutContent.story.title}
-          </h2>
-          <div className="space-y-4 text-text-light">
-            {aboutContent.story.paragraphs.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-        
-        <div className="bg-gradient-to-br from-accent-color to-pink-500 rounded-2xl p-8 text-white">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🎨</div>
-            <h3 className="text-2xl font-bold mb-4">{aboutContent.mission.title}</h3>
-            <p className="opacity-90">
-              {aboutContent.mission.description}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-3 gap-8 mb-16">
-        {aboutContent.values.map((value, index) => (
-          <div key={index} className="text-center">
-            <div className="text-4xl mb-4">{value.icon}</div>
-            <h3 className="text-xl font-bold mb-2 text-text-dark">{value.title}</h3>
-            <p className="text-text-light">{value.description}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="card bg-gradient-to-r from-gray-900 to-black text-white text-center">
-        <h2 className="text-3xl font-bold mb-4">
-          {aboutContent.cta.title}
-        </h2>
-        <p className="text-lg opacity-90 mb-6">
-          {aboutContent.cta.description}
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          {aboutContent.cta.stats.map((stat, index) => (
-            <div key={index} className="bg-white bg-opacity-20 px-6 py-3 rounded-full">
-              <span className="font-bold">{stat.value}</span> {stat.label}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+                    <figure className="max-w-md mx-auto">
+                        <img src={content.artists.imageUrl} alt={content.artists.title} className="rounded-lg shadow-2xl w-full border-4 border-contrast-color" />
+                        <figcaption className="text-center mt-4 flex justify-around text-contrast-color">
+                            <a href={content.artists.instagram.adriana} target="_blank" rel="noopener noreferrer" className="hover:text-sub-color">@adriluzzatto</a>
+                            <a href={content.artists.instagram.yoel} target="_blank" rel="noopener noreferrer" className="hover:text-sub-color">@soyyowyow</a>
+                        </figcaption>
+                    </figure>
+                    <div className="space-y-6 bg-dark-bg p-8 rounded-lg">
+                         <h2 className="text-3xl font-bold text-center text-contrast-color">{content.artists.title}</h2>
+                        {content.artists.paragraphs.map((p, index) => (
+                            <p key={index} dangerouslySetInnerHTML={{ __html: p }} className="leading-loose"></p>
+                        ))}
+                    </div>
+                </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+        </section>
+    );
+};
 
-export default AboutUs
+export default AboutUs;

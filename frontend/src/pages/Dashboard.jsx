@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useCart } from '@/context/CartContext'
 import { Link } from 'react-router-dom'
@@ -40,7 +40,7 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto">
-      {/* Bienvenida */}
+      {/* Bienvenida 
       <div className="card bg-gradient-to-r from-accent-color to-pink-500 text-white mb-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">
@@ -52,7 +52,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Estadísticas rápidas */}
+      /* Estadísticas rápidas 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         <div className="card text-center">
           <div className="text-3xl mb-2">👤</div>
@@ -73,7 +73,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Acciones rápidas */}
+       Acciones rápidas 
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-6 text-text-dark">
           Acciones Rápidas
@@ -98,7 +98,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Proyectos recientes o sugerencias */}
+      Proyectos recientes o sugerencias 
       <div className="card">
         <h2 className="text-2xl font-bold mb-6 text-text-dark">
           ¿En qué te podemos ayudar hoy?
@@ -134,4 +134,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Dashboard*/

@@ -1,153 +1,100 @@
-import React from 'react'
-import Gallery from '@/components/Gallery'
-import PricingCard from '@/components/PricingCard'
+import { useState, useEffect } from 'react';
+import { api } from '@/services/api';
+import { useCart } from '@/context/CartContext';
+
+const PriceCard = ({ product }) => {
+    const { addToCart } = useCart();
+    return (
+        <div className="bg-dark-bg p-8 rounded-lg shadow-xl flex flex-col border-2 border-contrast-color">
+            <h3 className="text-2xl font-bold text-contrast-color mb-4 text-center">{product.name}</h3>
+            <p className="text-center mb-6">{product.description}</p>
+            <div className="text-5xl font-bold text-center mb-6 text-contrast-color">{product.price}€</div>
+            <ul className="space-y-3 mb-8 flex-grow">
+                {product.details.map((detail, i) => (
+                    <li key={i} className="flex items-start">
+                        <svg className="w-5 h-5 text-contrast-color mr-2 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>{detail}</span>
+                    </li>
+                ))}
+            </ul>
+            <button onClick={() => addToCart(product)} className="mt-auto w-full bg-contrast-color text-main-color font-bold py-3 rounded-lg hover:bg-sub-contrast transition-colors">
+                Agregar al Carrito
+            </button>
+        </div>
+    );
+};
+
+const GalleryItem = ({ item, onSelect, isSelected }) => (
+    <div
+        onClick={onSelect}
+        className={`cursor-pointer p-4 rounded-lg transition-all duration-200 ${isSelected ? 'bg-contrast-color text-main-color shadow-lg' : 'bg-dark-bg hover:bg-gray-700'}`}
+    >
+        <h4 className="font-bold text-lg">{item.brand}</h4>
+    </div>
+);
 
 const GraphicDesign = () => {
-  const brands = [
-    {
-      title: 'TechStart',
-      description: 'Identidad visual completa para startup tecnológica',
-      emoji: '💻'
-    },
-    {
-      title: 'Urban Café',
-      description: 'Branding para cafetería con estilo urbano',
-      emoji: '☕'
-    },
-    {
-      title: 'FitLife',
-      description: 'Logo y diseño para gimnasio moderno',
-      emoji: '💪'
-    },
-    {
-      title: 'EcoGreen',
-      description: 'Identidad para empresa sostenible',
-      emoji: '🌱'
-    },
-    {
-      title: 'ArtSpace',
-      description: 'Branding para galería de arte contemporáneo',
-      emoji: '🎨'
-    }
-  ]
+    const [products, setProducts] = useState([]);
+    const [gallery, setGallery] = useState([]);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  const pricingPlans = [
-    {
-      id: 'basic-design',
-      name: 'Paquete Básico',
-      price: 250,
-      features: [
-        'Logo principal + 2 variaciones',
-        'Paleta de colores',
-        'Tipografía personalizada',
-        '3 rondas de revisiones',
-        'Archivos en alta resolución'
-      ]
-    },
-    {
-      id: 'premium-design',
-      name: 'Paquete Premium',
-      price: 500,
-      features: [
-        'Todo del paquete básico',
-        'Manual de identidad corporativa',
-        'Papelería básica (tarjetas, papel membretado)',
-        'Mockups profesionales',
-        '5 rondas de revisiones',
-        'Iconografía personalizada'
-      ]
-    },
-    {
-      id: 'enterprise-design',
-      name: 'Paquete Empresarial',
-      price: 750,
-      features: [
-        'Todo del paquete premium',
-        'Estrategia de marca completa',
-        'Aplicaciones digitales y físicas',
-        'Campaña de lanzamiento',
-        'Revisiones ilimitadas',
-        'Soporte post-entrega (3 meses)',
-        'Consultoría estratégica'
-      ]
-    }
-  ]
+    useEffect(() => {
+        const controller = new AbortController();
+        const fetchData = async () => {
+            try {
+                const [productsRes, galleryRes] = await Promise.all([
+                    api.products.get('GraphicDesign', { signal: controller.signal }),
+                    api.content.get('gallery-graphicDesign', { signal: controller.signal })
+                ]);
+                setProducts(productsRes.data);
+                setGallery(galleryRes.data);
+                if(galleryRes.data.length > 0) {
+                    setSelectedItem(galleryRes.data[0]);
+                }
+            } catch (error) {
+                 if (error.name !== 'AbortError') console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+        return () => controller.abort();
+    }, []);
 
-  return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-6 text-text-dark">
-          Diseño Gráfico
-        </h1>
-        <p className="text-xl text-text-light max-w-3xl mx-auto">
-          Creamos identidades visuales únicas que conectan con tu audiencia. 
-          Desde logos hasta estrategias de marca completas.
-        </p>
-      </div>
+    if (loading) return <div className="text-center py-20 text-xl">Cargando diseños...</div>;
 
-      {/* Galería de marcas */}
-      <Gallery 
-        images={brands} 
-        title="Marcas que Hemos Diseñado" 
-      />
-
-      {/* Sección de precios */}
-      <div className="mb-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 text-text-dark">
-            Paquetes de Diseño
-          </h2>
-          <p className="text-lg text-text-light">
-            Elige el paquete que mejor se adapte a tus necesidades
-          </p>
+    return (
+        <div className="bg-main-color text-sub-color">
+            <section className="py-16">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl font-bold text-center mb-12 text-contrast-color">Galería de Diseño Gráfico</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="md:col-span-1 space-y-4">
+                            {gallery.map(item => <GalleryItem key={item.id} item={item} onSelect={() => setSelectedItem(item)} isSelected={selectedItem?.id === item.id}/>)}
+                        </div>
+                        <div className="md:col-span-2">
+                             {selectedItem && (
+                                 <div className="bg-dark-bg p-6 rounded-lg sticky top-24">
+                                     <img src={selectedItem.imageUrl} alt={selectedItem.brand} className="w-full h-auto object-cover rounded-lg mb-4"/>
+                                     <h3 className="text-2xl font-bold text-contrast-color mb-2">{selectedItem.brand}</h3>
+                                     <p>{selectedItem.description}</p>
+                                 </div>
+                             )}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section className="py-16 bg-dark-bg">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-4xl font-bold text-center mb-12 text-contrast-color">Paquetes de Precios</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                       {products.map(p => <PriceCard key={p._id} product={p} />)}
+                    </div>
+                </div>
+            </section>
         </div>
+    );
+};
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {pricingPlans.map(plan => (
-            <PricingCard key={plan.id} product={plan} />
-          ))}
-        </div>
-      </div>
-
-      {/* Proceso de trabajo */}
-      <div className="card bg-gradient-to-r from-purple-500 to-pink-500 text-white mb-16">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-4">
-            Nuestro Proceso de Trabajo
-          </h2>
-          <p className="text-lg opacity-90">
-            Metodología probada para crear diseños que funcionan
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-bold mb-2">1. Briefing</h3>
-            <p className="opacity-90">Entendemos tu visión y objetivos</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-4xl mb-4">✏️</div>
-            <h3 className="text-xl font-bold mb-2">2. Conceptualización</h3>
-            <p className="opacity-90">Desarrollamos ideas y conceptos únicos</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-4xl mb-4">🎨</div>
-            <h3 className="text-xl font-bold mb-2">3. Diseño</h3>
-            <p className="opacity-90">Creamos propuestas visuales impactantes</p>
-          </div>
-          
-          <div className="text-center">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-xl font-bold mb-2">4. Entrega</h3>
-            <p className="opacity-90">Finalizamos y entregamos todo listo para usar</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default GraphicDesign
+export default GraphicDesign;

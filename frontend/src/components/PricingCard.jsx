@@ -1,4 +1,4 @@
-import React from 'react'
+/*import React from 'react'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 
@@ -44,4 +44,4 @@ const PricingCard = ({ product }) => {
   )
 }
 
-export default PricingCard
+export default PricingCard*/

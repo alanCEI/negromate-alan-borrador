@@ -1,125 +1,61 @@
-// Servicio centralizado para comunicación con la API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_URL = import.meta.env.VITE_API_URL;
 
-class ApiService {
-  constructor() {
-    this.baseURL = API_BASE_URL
-  }
+// Helper para manejar las respuestas de la API
+const handleResponse = async (response) => {
+    const data = await response.json();
+    if (!response.ok) {
+        const error = (data && data.msg) || response.statusText;
+        throw new Error(error);
+    }
+    return data;
+};
 
-  // Método genérico para hacer peticiones
-  async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`
-    const config = {
-      headers: {
+// Función genérica para hacer peticiones fetch
+export const apiRequest = async (endpoint, method = 'GET', body = null, token = null) => {
+    const url = `${API_URL}${endpoint}`;
+    const headers = {
         'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    }
+        'accept': 'application/json',
+    };
 
-    // Agregar token si existe
-    const token = localStorage.getItem('token')
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+        headers['Authorization'] = `Bearer ${token}`;
     }
 
+    const options = {
+        method,
+        headers,
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+    
     try {
-      const response = await fetch(url, config)
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.msg || 'Error en la petición')
-      }
-
-      return data
+        const response = await fetch(url, options);
+        return handleResponse(response);
     } catch (error) {
-      console.error('API Error:', error)
-      throw error
+        console.error('API request error:', error);
+        throw error;
     }
-  }
+};
 
-  // === MÉTODOS DE CONTENIDO (NUEVOS) ===
-  async getContentByKey(key) {
-    return this.request(`/content/key/${key}`)
-  }
-
-  async getContentByType(type) {
-    return this.request(`/content/type/${type}`)
-  }
-
-  async getCompanyInfo() {
-    return this.request('/content/key/company-info')
-  }
-
-  async getLandingPageContent() {
-    return this.request('/content/key/landing-page')
-  }
-
-  async getAboutPageContent() {
-    return this.request('/content/key/about-page')
-  }
-
-  async getContactPageContent() {
-    return this.request('/content/key/contact-page')
-  }
-
-  async getServiceContent(service) {
-    return this.request(`/content/key/${service}-service`)
-  }
-
-  // === MÉTODOS EXISTENTES ===
-  async login(credentials) {
-    return this.request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(credentials),
-    })
-  }
-
-  async register(userData) {
-    return this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    })
-  }
-
-  async logout() {
-    return this.request('/auth/logout', {
-      method: 'POST',
-    })
-  }
-
-  async getProducts() {
-    return this.request('/products')
-  }
-
-  async getProductsByCategory(category) {
-    return this.request(`/products/category/${category}`)
-  }
-
-  async createOrder(orderData) {
-    return this.request('/orders', {
-      method: 'POST',
-      body: JSON.stringify(orderData),
-    })
-  }
-
-  async getUserOrders() {
-    return this.request('/orders/user')
-  }
-
-  async sendContactForm(formData) {
-    return this.request('/contact', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-    })
-  }
-
-  // Método para poblar contenido (desarrollo)
-  async seedContent() {
-    return this.request('/content/seed', {
-      method: 'POST',
-    })
-  }
-}
-
-export default new ApiService()
+// Ejemplos de servicios específicos
+export const api = {
+    auth: {
+        login: (credentials) => apiRequest('/auth/login', 'POST', credentials),
+        register: (userData) => apiRequest('/auth/register', 'POST', userData),
+        getProfile: (token) => apiRequest('/auth/profile', 'GET', null, token),
+    },
+    products: {
+        get: (category = '') => apiRequest(`/products${category ? `?category=${category}` : ''}`),
+        getById: (id) => apiRequest(`/products/${id}`),
+    },
+    content: {
+        get: (sectionName) => apiRequest(`/content/${sectionName}`),
+    },
+    orders: {
+        create: (orderData, token) => apiRequest('/orders', 'POST', orderData, token),
+        getMyOrders: (token) => apiRequest('/orders/myorders', 'GET', null, token)
+    }
+};

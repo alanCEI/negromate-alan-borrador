@@ -1,37 +1,18 @@
-import React from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
-// Componente para proteger rutas que requieren autenticación
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth()
-  const location = useLocation()
+const ProtectedRoute = () => {
+    const { user, loading } = useAuth();
 
-  // Mientras carga la información de autenticación, muestra un loading
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
-          <p className="text-lg text-text-light">Verificando autenticación...</p>
-        </div>
-      </div>
-    )
-  }
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="text-xl">Cargando...</div>
+            </div>
+        );
+    }
 
-  // Si no está autenticado, redirige al login guardando la ubicación actual
-  if (!isAuthenticated) {
-    return (
-      <Navigate 
-        to="/auth/login" 
-        state={{ from: location.pathname }} 
-        replace 
-      />
-    )
-  }
+    return user ? <Outlet /> : <Navigate to="/profile" replace />;
+};
 
-  // Si está autenticado, muestra el componente
-  return children
-}
-
-export default ProtectedRoute
+export default ProtectedRoute;

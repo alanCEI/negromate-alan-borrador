@@ -1,33 +1,45 @@
-import mongoose from 'mongoose'
-import { config } from '../config/config.js'
+import mongoose from 'mongoose';
+import { DB_USER, DB_PASS, CLUSTER, DATABASE } from '../config/config.js';
+import { mockData } from './data.mock.js';
+import Content from './models/Content.model.js';
+import Product from './models/Product.model.js';
+
 
 export const connectDB = async () => {
-  const { user, password, cluster, name } = config.database
-  const url = `mongodb+srv://${user}:${password}@${cluster}/${name}`
+    const url = `mongodb+srv://${DB_USER}:${DB_PASS}@${CLUSTER}/${DATABASE}?retryWrites=true&w=majority`;
 
-  try {
-    await mongoose.connect(url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-    
-    console.log("✅ Connected to MongoDB")
-    console.log(`📊 Database: ${mongoose.connection.db.databaseName}`)
-    
-    const collections = await mongoose.connection.db.listCollections().toArray()
-    console.log(`📋 Collections: ${collections.map(c => c.name).join(', ') || 'None'}`)
+    try {
+        await mongoose.connect(url);
+        console.log("✅ Conectado a MongoDB Atlas");
+        console.log(`DB: ${mongoose.connection.db.databaseName}`);
+        
+        // Opcional: Poblar la base de datos si está vacía
+        await populateDatabase();
 
-  } catch (error) {
-    console.error(`❌ Error connecting to MongoDB: ${error.message}`)
-    process.exit(1)
-  }
-}
+    } catch (error) {
+        console.error(`❌ Error al conectar con MongoDB: ${error}`);
+        process.exit(1); // Detiene la aplicación si no se puede conectar a la DB
+    }
+};
 
-// Eventos de conexión
-mongoose.connection.on('disconnected', () => {
-  console.log('📡 MongoDB disconnected')
-})
+// Función para poblar la base de datos con datos iniciales
+const populateDatabase = async () => {
+    try {
+        // Poblar contenido (About Us, etc.)
+        const contentCount = await Content.countDocuments();
+        if (contentCount === 0) {
+            await Content.insertMany(mockData.content);
+            console.log("📚 Contenido inicial insertado en la base de datos.");
+        }
 
-mongoose.connection.on('error', (error) => {
-  console.error(`❌ MongoDB error: ${error}`)
-})
+        // Poblar productos
+        const productCount = await Product.countDocuments();
+        if (productCount === 0) {
+            await Product.insertMany(mockData.products);
+            console.log("🛍️ Productos iniciales insertados en la base de datos.");
+        }
+
+    } catch (error) {
+        console.error("🔥 Error al poblar la base de datos:", error);
+    }
+};

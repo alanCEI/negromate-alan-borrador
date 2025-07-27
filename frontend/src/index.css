@@ -1,57 +1,44 @@
-/* Reset CSS */
+/* Importar la fuente de Google */
+@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@400;700&display=swap');
+
+/* Configuración de Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --------------------------------- */
+/* ----- Custom properties --------- */
+/* --------------------------------- */
 :root {
-  --primary-color: #1a1a1a;
-  --secondary-color: #f5f5f5;
-  --accent-color: #ff6b35;
-  --text-dark: #333;
-  --text-light: #666;
-  --border-color: #e0e0e0;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
+    --main-color: #333333;
+    --dark-bg: #1a1a1a;
+    --sub-color: #E3E3E3;
+    --contrast-color: #e9f76b;
+    --sub-contrast: #0021D7;
 }
-[data-theme="dark"] {
-  --primary-color: #f5f5f5;
-  --secondary-color: #1a1a1a;
-  --accent-color: #ff6b35;
-  --text-dark: #f5f5f5;
-  --text-light: #ccc;
-  --border-color: #333;
-  --shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+
+/* ----------- Dark mode ----------- */
+.dark {
+    --main-color: #E3E3E3;
+    --dark-bg: #f0f0f0; /* Un gris un poco más oscuro que el blanco puro */
+    --sub-color: #1a1a1a;
+    --contrast-color: #333333;
+    --sub-contrast: #e9f76b;
 }
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+
+/* ---------- Body reset ----------- */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  color: var(--text-dark);
-  background-color: var(--secondary-color);
-  transition: var(--transition);
+    /*@apply min-h-screen text-base text-sub-color bg-main-color leading-relax;*/
+    font-family: 'Spartan', sans-serif;
 }
-.btn-primary {
-  background-color: var(--accent-color);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
+ 
+/* -- Scroll movement html reset --- */
+html {
+    scroll-behavior: smooth;
 }
-.btn-primary:hover {
-  background-color: #e55a2b;
-  transform: translateY(-2px);
-}
-.card {
-  background: var(--primary-color);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-}
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+/* Estilos para el grid general de la aplicación */
+.gridContainer {
+    /*@apply grid min-h-screen;*/
+    grid-template-rows: auto 1fr auto;
 }

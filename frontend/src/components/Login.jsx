@@ -1,101 +1,65 @@
-import React, { useState } from 'react'
-import { useAuth } from '@/context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [message, setMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  
-  const { login } = useAuth()
-  const navigate = useNavigate()
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const { login } = useAuth();
+    const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        try {
+            await login(email, password);
+        } catch (err) {
+            setError(err.message || 'Error al iniciar sesión. Verifica tus credenciales.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage('')
-
-    const result = await login(formData)
-    
-    if (result.success) {
-      setMessage('Sesión iniciada correctamente')
-      setTimeout(() => {
-        navigate('/')
-      }, 1500)
-    } else {
-      setMessage(result.message || 'Error al iniciar sesión')
-    }
-    
-    setIsLoading(false)
-  }
-
-  return (
-    <div className="card max-w-md mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-6 text-text-dark">
-        Iniciar Sesión
-      </h2>
-      
-      {message && (
-        <div className={`mb-4 p-3 rounded-lg text-center ${
-          message.includes('correctamente') 
-            ? 'bg-green-100 text-green-700' 
-            : 'bg-red-100 text-red-700'
-        }`}>
-          {message}
+    return (
+        <div className="w-full max-w-md bg-sub-color p-8 rounded-lg shadow-lg border-2 border-contrast-color">
+            <h2 className="text-3xl font-bold text-center mb-6 text-dark-bg">Iniciar Sesión</h2>
+            {error && <p className="bg-red-200 text-red-800 p-3 rounded-md mb-4 text-center">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                    <label htmlFor="login-email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                        id="login-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sub-contrast focus:border-sub-contrast sm:text-sm text-dark-bg"
+                        autoComplete="email"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="login-password" className="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input
+                        id="login-password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sub-contrast focus:border-sub-contrast sm:text-sm text-dark-bg"
+                        autoComplete="current-password"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-main-color bg-contrast-color hover:bg-sub-contrast focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sub-contrast transition-colors disabled:opacity-50"
+                >
+                    {loading ? 'Entrando...' : 'Entrar'}
+                </button>
+            </form>
         </div>
-      )}
+    );
+};
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-text-dark mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-border-color rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-color"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-text-dark mb-1">
-            Contraseña
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-border-color rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-color"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-export default Login
+export default Login;

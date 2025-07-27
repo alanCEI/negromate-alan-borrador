@@ -1,3 +1,5 @@
+Datos a NO tomar en cuenta:
+
 fc620f0cd3bb754dc955907c78996a2c89a82041d36730f7a2935e0b16d90d8c
 
 - JWT

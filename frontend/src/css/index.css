@@ -1,7 +1,7 @@
 /* frontend/src/css/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Spartan:wght@400;700&display=swap');
 
-:root {
+body.light-theme {
   /* Tema Claro (por defecto) */
   --main-color: #FFFFFF;
   --dark-bg: #F0F0F0; 
@@ -13,7 +13,7 @@
   --error-text: #B91C1C;
 }
 
-html[data-theme='dark'] {
+body.dark-theme {
   /* Tema Oscuro */
   --main-color: #1A1B1F;
   --dark-bg: #111215;
@@ -84,6 +84,29 @@ body {
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  background-color: var(--dark-bg);
+  color: var(--sub-color);
+}
+
+.form-input:focus {
+  outline: 2px solid var(--contrast-color);
+  border-color: transparent;
 }
 
 strong, b { font-weight: 700; }

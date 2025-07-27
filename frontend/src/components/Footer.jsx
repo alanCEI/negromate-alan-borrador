@@ -6,13 +6,16 @@ const Footer = () => {
 
     return (
         <footer className="footer">
-            <div className="container">
+            <div className="container footer-container">
                 <hr className="footer-divider" />
                 <div className="footer-content">
-                    <p className="footer-copy">&copy; {new Date().getFullYear()} Negromate Creatives. Todos los derechos reservados.</p>
+                    <p className="footer-copyright">&copy; {new Date().getFullYear()} Negromate Creatives. Todos los derechos reservados.</p>
                     <div className="footer-links">
-                        <button onClick={toggleTheme} className="theme-toggle-button">
-                            Modo {theme === 'dark' ? 'Claro' : 'Oscuro'}
+                        <button
+                            onClick={toggleTheme}
+                            className="theme-toggle-button"
+                        >
+                            Modo {theme === 'light' ? 'Oscuro' : 'Claro'}
                         </button>
                          <a href="https://www.instagram.com/negromatecreatives/" target="_blank" rel="noopener noreferrer">
                            Instagram

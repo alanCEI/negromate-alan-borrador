@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import '@/css/components/Register.css'; // Asegúrate de importar el CSS
+import '@/css/components/Form.css'; // Importa el archivo de estilos unificado
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -28,10 +28,10 @@ const Register = () => {
     };
 
     return (
-        <div className="register-form-container">
+        <div className="form-container"> {/* Usa la clase unificada */}
             <h2>Crear Cuenta</h2>
              {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleSubmit} className="register-form">
+            <form onSubmit={handleSubmit} className="form">
                  <div className="form-group">
                     <label htmlFor="register-username">Nombre de Usuario</label>
                     <input

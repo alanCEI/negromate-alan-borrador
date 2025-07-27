@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import '@/css/components/Login.css';
+import '@/css/components/Form.css'; // Importa el archivo de estilos unificado
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -23,10 +23,10 @@ const Login = () => {
     };
 
     return (
-        <div className="login-form-container">
+        <div className="form-container"> {/* Usa la clase unificada */}
             <h2>Iniciar Sesión</h2>
             {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={handleSubmit} className="form">
                 <div className="form-group">
                     <label htmlFor="login-email">Email</label>
                     <input
@@ -35,6 +35,7 @@ const Login = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="form-input"
                         autoComplete="email"
                     />
                 </div>
@@ -46,10 +47,15 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="form-input"
                         autoComplete="current-password"
                     />
                 </div>
-                <button type="submit" disabled={loading} className="button">
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="button"
+                >
                     {loading ? 'Entrando...' : 'Entrar'}
                 </button>
             </form>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import '@/css/components/Register.css'; // Asegúrate de importar el CSS
 
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -27,50 +28,50 @@ const Register = () => {
     };
 
     return (
-        <div className="w-full max-w-md bg-sub-color p-8 rounded-lg shadow-lg border-2 border-contrast-color">
-            <h2 className="text-3xl font-bold text-center mb-6 text-dark-bg">Crear Cuenta</h2>
-             {error && <p className="bg-red-200 text-red-800 p-3 rounded-md mb-4 text-center">{error}</p>}
-            <form onSubmit={handleSubmit} className="space-y-6">
-                 <div>
-                    <label htmlFor="register-username" className="block text-sm font-medium text-gray-700">Nombre de Usuario</label>
+        <div className="register-form-container">
+            <h2>Crear Cuenta</h2>
+             {error && <p className="error-message">{error}</p>}
+            <form onSubmit={handleSubmit} className="register-form">
+                 <div className="form-group">
+                    <label htmlFor="register-username">Nombre de Usuario</label>
                     <input
                         id="register-username"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sub-contrast focus:border-sub-contrast sm:text-sm text-dark-bg"
+                        className="form-input"
                         autoComplete="username"
                     />
                 </div>
-                <div>
-                    <label htmlFor="register-email" className="block text-sm font-medium text-gray-700">Email</label>
+                <div className="form-group">
+                    <label htmlFor="register-email">Email</label>
                     <input
                         id="register-email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sub-contrast focus:border-sub-contrast sm:text-sm text-dark-bg"
+                        className="form-input"
                         autoComplete="email"
                     />
                 </div>
-                <div>
-                    <label htmlFor="register-password" className="block text-sm font-medium text-gray-700">Contraseña (mín. 6 caracteres)</label>
+                <div className="form-group">
+                    <label htmlFor="register-password">Contraseña (mín. 6 caracteres)</label>
                     <input
                         id="register-password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sub-contrast focus:border-sub-contrast sm:text-sm text-dark-bg"
+                        className="form-input"
                         autoComplete="new-password"
                     />
                 </div>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-main-color bg-contrast-color hover:bg-sub-contrast focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sub-contrast transition-colors disabled:opacity-50"
+                    className="button"
                 >
                     {loading ? 'Creando cuenta...' : 'Registrarse'}
                 </button>

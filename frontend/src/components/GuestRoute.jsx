@@ -6,9 +6,7 @@ const GuestRoute = () => {
 
      if (loading) {
         return (
-             <div className="flex justify-center items-center h-screen">
-                <div className="text-xl">Cargando...</div>
-            </div>
+             <div className="loading-message">Cargando...</div>
         );
     }
 

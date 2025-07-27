@@ -1,24 +1,25 @@
 import { useState } from 'react';
 import Login from '@/components/Login';
 import Register from '@/components/Register';
+import '@/css/pages/Profile.css';
 
 const Profile = () => {
     const [showLogin, setShowLogin] = useState(true);
 
     return (
-        <section className="py-16 bg-main-color min-h-screen flex items-center justify-center">
-            <div className="container mx-auto px-4 flex flex-col items-center">
+        <section className="section profile-page">
+            <div className="container profile-container">
                 <div className="w-full max-w-md">
-                    <div className="flex justify-center border-b-2 border-contrast-color mb-8">
+                    <div className="profile-toggle-buttons">
                         <button
                             onClick={() => setShowLogin(true)}
-                            className={`flex-1 py-3 text-lg font-bold transition-colors rounded-t-lg ${showLogin ? 'bg-contrast-color text-main-color' : 'text-contrast-color hover:bg-gray-700'}`}
+                            className={`toggle-button ${showLogin ? 'active' : ''}`}
                         >
                             Iniciar Sesión
                         </button>
                          <button
                             onClick={() => setShowLogin(false)}
-                            className={`flex-1 py-3 text-lg font-bold transition-colors rounded-t-lg ${!showLogin ? 'bg-contrast-color text-main-color' : 'text-contrast-color hover:bg-gray-700'}`}
+                            className={`toggle-button ${!showLogin ? 'active' : ''}`}
                         >
                             Registrarse
                         </button>

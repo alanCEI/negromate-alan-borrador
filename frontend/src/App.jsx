@@ -11,31 +11,25 @@ import Murals from '@/pages/Murals';
 import ShoppingCart from '@/pages/ShoppingCart';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
+import './css/App.css';
 
 function App() {
   return (
-    <div className="gridContainer bg-main-color">
+    <div className="app-container">
       <Header />
-      <main className="w-full">
+      <main className="main-content">
         <Routes>
-          {/* Rutas públicas */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/graphic-design" element={<GraphicDesign />} />
           <Route path="/custom-clothing" element={<CustomClothing />} />
           <Route path="/murals" element={<Murals />} />
-
-          {/* Rutas solo para invitados (no logueados) */}
           <Route element={<GuestRoute />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
-
-          {/* Rutas protegidas (requieren login) */}
           <Route element={<ProtectedRoute />}>
              <Route path="/cart" element={<ShoppingCart />} />
-             {/* Aquí podrías agregar una página de perfil del usuario logueado */}
-             {/* <Route path="/my-profile" element={<UserDashboard />} /> */}
           </Route>
         </Routes>
       </main>

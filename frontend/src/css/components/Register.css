@@ -1,0 +1,34 @@
+/* frontend/src/css/components/Register.css */
+
+/*
+  Este componente comparte la mayoría de los estilos con el formulario de Login.
+  Se reutilizan las clases para mantener la consistencia.
+  No es necesario añadir CSS nuevo a menos que se quiera un estilo específico
+  para el registro. Las clases como 'form-container', 'form-group', etc.,
+  se aplican desde index.css y las queries.
+*/
+
+.register-form-container {
+  width: 100%;
+  max-width: 28rem; /* 448px */
+  background-color: var(--sub-color);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  border: 2px solid var(--contrast-color);
+  color: var(--dark-bg);
+}
+
+.register-form-container h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--dark-bg);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
